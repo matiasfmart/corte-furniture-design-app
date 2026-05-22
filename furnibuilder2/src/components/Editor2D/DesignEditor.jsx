@@ -10,8 +10,10 @@ import ModuleRect from './ModuleRect'
 import { ExternalDimensions } from './DimensionLabel'
 import { theme } from '../../styles/theme'
 
+import { useIsMobile } from '../../hooks/useIsMobile'
+
 // Zonas internas del SVG (px):
-const ZONE = {
+const ZONE_DESKTOP = {
   marginTop: 60,
   marginBottom: 60,
   marginLeft: 60,
@@ -21,7 +23,19 @@ const ZONE = {
   buttonOffset: 24,
 }
 
+const ZONE_MOBILE = {
+  marginTop: 30,
+  marginBottom: 30,
+  marginLeft: 20,
+  marginRight: 20,
+  labelHeight: 40,
+  buttonRadius: 14,
+  buttonOffset: 20,
+}
+
 export default function DesignEditor() {
+  const isMobile = useIsMobile()
+  const ZONE = isMobile ? ZONE_MOBILE : ZONE_DESKTOP
   const modules = useDesignStore((s) => s.modules)
   const selectedModuleId = useDesignStore((s) => s.selectedModuleId)
   const selectModule = useDesignStore((s) => s.selectModule)

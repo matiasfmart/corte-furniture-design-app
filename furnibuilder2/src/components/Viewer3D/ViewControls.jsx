@@ -1,5 +1,6 @@
 import { useDesignStore } from '../../store/designStore'
 import { theme } from '../../styles/theme'
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 /**
  * ViewControls — Barra de controles 3D (bottom center).
@@ -63,7 +64,7 @@ const IconCAD = () => (
   </svg>
 )
 
-function ControlBtn({ active, onClick, title, children }) {
+function ControlBtn({ active, onClick, title, children, size = 34 }) {
   return (
     <button
       onClick={onClick}
@@ -72,8 +73,8 @@ function ControlBtn({ active, onClick, title, children }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 34,
-        height: 34,
+        width: size,
+        height: size,
         border: 'none',
         borderRadius: 6,
         cursor: 'pointer',
@@ -88,6 +89,8 @@ function ControlBtn({ active, onClick, title, children }) {
 }
 
 export default function ViewControls() {
+  const isMobile = useIsMobile()
+  const btnSize = isMobile ? 42 : 34
   const viewState = useDesignStore((s) => s.viewState)
   const renderMode = useDesignStore((s) => s.renderMode)
   const openAmount = useDesignStore((s) => s.openAmount)
@@ -131,6 +134,7 @@ export default function ViewControls() {
         active={viewState === 'closed' && !isOpen}
         onClick={handleNormal}
         title="Normal"
+        size={btnSize}
       >
         <IconClosed />
       </ControlBtn>
@@ -138,6 +142,7 @@ export default function ViewControls() {
         active={viewState === 'closed' && isOpen}
         onClick={handleOpen}
         title="Abierto"
+        size={btnSize}
       >
         <IconOpen />
       </ControlBtn>
@@ -145,6 +150,7 @@ export default function ViewControls() {
         active={viewState === 'exploded'}
         onClick={handleExploded}
         title="Despiece"
+        size={btnSize}
       >
         <IconExploded />
       </ControlBtn>
@@ -153,10 +159,10 @@ export default function ViewControls() {
       <div style={{ width: 1, height: 18, background: theme.bg.border, margin: '0 4px' }} />
 
       {/* Modo de renderizado */}
-      <ControlBtn active={renderMode === 'solid'} onClick={() => setRenderMode('solid')} title="Sólido">
+      <ControlBtn active={renderMode === 'solid'} onClick={() => setRenderMode('solid')} title="Sólido" size={btnSize}>
         <IconSolid />
       </ControlBtn>
-      <ControlBtn active={renderMode === 'cad'} onClick={() => setRenderMode('cad')} title="CAD">
+      <ControlBtn active={renderMode === 'cad'} onClick={() => setRenderMode('cad')} title="CAD" size={btnSize}>
         <IconCAD />
       </ControlBtn>
     </div>

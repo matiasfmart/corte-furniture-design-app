@@ -5,7 +5,7 @@ import { theme } from '../../styles/theme'
 
 const MATERIALS = Object.entries(MATERIAL_LABELS)
 
-export default function TopBar() {
+export default function TopBar({ isMobile }) {
   const view = useDesignStore((s) => s.view)
   const setView = useDesignStore((s) => s.setView)
   const depth = useDesignStore((s) => s.design.depth)
@@ -29,6 +29,7 @@ export default function TopBar() {
 
   const [editingDepth, setEditingDepth] = useState(false)
   const [depthValue, setDepthValue] = useState(String(depth))
+  const [showSettings, setShowSettings] = useState(false)
   const depthRef = useRef(null)
 
   const handleDepthClick = () => {
@@ -50,48 +51,24 @@ export default function TopBar() {
     if (e.key === 'Escape') setEditingDepth(false)
   }
 
-  return (
-    <div
-      className="h-12 flex items-center px-4 gap-4 shrink-0"
-      style={{ background: theme.bg.hard, borderBottom: `1px solid ${theme.bg.border}` }}
-    >
-      {/* Brand */}
-      <span className="font-bold text-sm select-none tracking-wide">
-        <span style={{ color: theme.text.primary }}>corte</span>
-      </span>
+  const selectStyle = {
+    background: theme.bg.elevated,
+    border: `1px solid ${theme.bg.border}`,
+    color: theme.text.primary,
+    fontSize: 13,
+    borderRadius: 4,
+    padding: '4px 8px',
+    outline: 'none',
+    cursor: 'pointer',
+  }
 
-      {/* Tabs */}
-      <div className="flex gap-0">
-        <button
-          onClick={() => setView('designer')}
-          className="px-3 py-2 text-xs font-medium transition-colors"
-          style={{
-            background: view === 'designer' ? theme.accent.orangeSoft : 'transparent',
-            color: view === 'designer' ? theme.accent.orange : theme.text.secondary,
-            borderBottom: view === 'designer' ? `2px solid ${theme.accent.orange}` : '2px solid transparent',
-          }}
-        >
-          Diseñar
-        </button>
-        <button
-          onClick={() => setView('bom')}
-          className="px-3 py-2 text-xs font-medium transition-colors"
-          style={{
-            background: view === 'bom' ? theme.accent.orangeSoft : 'transparent',
-            color: view === 'bom' ? theme.accent.orange : theme.text.secondary,
-            borderBottom: view === 'bom' ? `2px solid ${theme.accent.orange}` : '2px solid transparent',
-          }}
-        >
-          Materiales
-        </button>
-      </div>
+  const labelStyle = { color: theme.text.muted, fontSize: 11, whiteSpace: 'nowrap' }
 
-      {/* Spacer */}
-      <div className="flex-1" />
-
+  const settingsContent = (
+    <>
       {/* Depth control */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Prof:</span>
+        <span style={labelStyle}>Prof:</span>
         {editingDepth ? (
           <input
             ref={depthRef}
@@ -100,27 +77,12 @@ export default function TopBar() {
             onChange={(e) => setDepthValue(e.target.value)}
             onBlur={commitDepth}
             onKeyDown={handleDepthKey}
-            className="w-14 rounded px-1.5 py-0.5 text-xs outline-none"
-            style={{
-              background: theme.bg.elevated,
-              border: `1px solid ${theme.bg.border}`,
-              color: theme.text.primary,
-              fontSize: 13,
-            }}
+            style={{ ...selectStyle, width: 60 }}
             min={200}
             max={800}
           />
         ) : (
-          <button
-            onClick={handleDepthClick}
-            className="rounded px-2 py-0.5 transition-colors"
-            style={{
-              background: theme.bg.elevated,
-              border: `1px solid ${theme.bg.border}`,
-              color: theme.text.primary,
-              fontSize: 13,
-            }}
-          >
+          <button onClick={handleDepthClick} style={selectStyle}>
             {depth}mm
           </button>
         )}
@@ -128,98 +90,48 @@ export default function TopBar() {
 
       {/* Material selector */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Mat:</span>
-        <select
-          value={material}
-          onChange={(e) => updateMaterial(e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Mat:</span>
+        <select value={material} onChange={(e) => updateMaterial(e.target.value)} style={selectStyle}>
           {MATERIALS.map(([key, label]) => (
             <option key={key} value={key}>{label}</option>
           ))}
         </select>
       </div>
 
-      {/* Thickness selector */}
+      {/* Thickness */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Grosor:</span>
-        <select
-          value={thickness}
-          onChange={(e) => updateThickness(+e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Grosor:</span>
+        <select value={thickness} onChange={(e) => updateThickness(+e.target.value)} style={selectStyle}>
           <option value={12}>12mm</option>
           <option value={15}>15mm</option>
           <option value={18}>18mm</option>
         </select>
       </div>
 
-      {/* Back thickness selector */}
+      {/* Back thickness */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Fondo:</span>
-        <select
-          value={backThickness}
-          onChange={(e) => updateBackThickness(+e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Fondo:</span>
+        <select value={backThickness} onChange={(e) => updateBackThickness(+e.target.value)} style={selectStyle}>
           <option value={3}>3mm</option>
           <option value={4}>4mm</option>
           <option value={6}>6mm</option>
         </select>
       </div>
 
-      {/* Hinge type selector */}
+      {/* Hinge type */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Bisagra:</span>
-        <select
-          value={hingeType}
-          onChange={(e) => updateHingeType(e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Bisagra:</span>
+        <select value={hingeType} onChange={(e) => updateHingeType(e.target.value)} style={selectStyle}>
           <option value="clip-on">Cazoleta</option>
           <option value="soft-close">Soft-close</option>
           <option value="piano">Piano</option>
         </select>
       </div>
 
-      {/* Door mount selector */}
+      {/* Door mount */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Montaje:</span>
-        <select
-          value={doorMount}
-          onChange={(e) => updateDoorMount(e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Montaje:</span>
+        <select value={doorMount} onChange={(e) => updateDoorMount(e.target.value)} style={selectStyle}>
           <option value="overlay">Overlay</option>
           <option value="inset">Inset</option>
         </select>
@@ -227,18 +139,8 @@ export default function TopBar() {
 
       {/* Door clearance */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Holg:</span>
-        <select
-          value={doorClearance}
-          onChange={(e) => updateDoorClearance(+e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Holg:</span>
+        <select value={doorClearance} onChange={(e) => updateDoorClearance(+e.target.value)} style={selectStyle}>
           <option value={2}>2mm</option>
           <option value={3}>3mm</option>
           <option value={4}>4mm</option>
@@ -249,22 +151,103 @@ export default function TopBar() {
 
       {/* Slider clearance */}
       <div className="flex items-center gap-1.5">
-        <span style={{ color: theme.text.muted, fontSize: 11 }}>Corr:</span>
-        <select
-          value={sliderClearance}
-          onChange={(e) => updateSliderClearance(+e.target.value)}
-          className="rounded px-2 py-0.5 cursor-pointer outline-none"
-          style={{
-            background: theme.bg.elevated,
-            border: `1px solid ${theme.bg.border}`,
-            color: theme.text.primary,
-            fontSize: 13,
-          }}
-        >
+        <span style={labelStyle}>Corr:</span>
+        <select value={sliderClearance} onChange={(e) => updateSliderClearance(+e.target.value)} style={selectStyle}>
           <option value={17}>17mm</option>
           <option value={25}>25mm</option>
         </select>
       </div>
+    </>
+  )
+
+  return (
+    <div style={{ position: 'relative', flexShrink: 0 }}>
+      <div
+        style={{
+          height: 48,
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 16px',
+          gap: 16,
+          background: theme.bg.hard,
+          borderBottom: `1px solid ${theme.bg.border}`,
+        }}
+      >
+        {/* Brand */}
+        <span style={{ fontWeight: 700, fontSize: 14, color: theme.text.primary, userSelect: 'none', letterSpacing: '0.5px' }}>
+          corte
+        </span>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 0 }}>
+          {[
+            { key: 'designer', label: 'Diseñar' },
+            { key: 'bom', label: 'Materiales' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setView(tab.key)}
+              style={{
+                padding: '8px 12px',
+                fontSize: 12,
+                fontWeight: 500,
+                border: 'none',
+                cursor: 'pointer',
+                background: view === tab.key ? theme.accent.orangeSoft : 'transparent',
+                color: view === tab.key ? theme.accent.orange : theme.text.secondary,
+                borderBottom: view === tab.key ? `2px solid ${theme.accent.orange}` : '2px solid transparent',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Spacer */}
+        <div style={{ flex: 1 }} />
+
+        {isMobile ? (
+          /* Mobile: gear button to toggle settings */
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            style={{
+              background: showSettings ? `${theme.accent.orange}20` : 'transparent',
+              border: 'none',
+              color: showSettings ? theme.accent.orange : theme.text.secondary,
+              fontSize: 18,
+              cursor: 'pointer',
+              padding: '6px 10px',
+              borderRadius: 6,
+            }}
+          >
+            ⚙
+          </button>
+        ) : (
+          /* Desktop: inline controls */
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {settingsContent}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile settings dropdown */}
+      {isMobile && showSettings && (
+        <div style={{
+          position: 'absolute',
+          top: 48,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          background: theme.bg.hard,
+          borderBottom: `1px solid ${theme.bg.border}`,
+          padding: '12px 16px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 12,
+        }}>
+          {settingsContent}
+        </div>
+      )}
     </div>
   )
 }

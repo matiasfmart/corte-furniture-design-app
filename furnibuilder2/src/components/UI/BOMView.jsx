@@ -15,7 +15,7 @@ const STANDARD_BOARD = { w: 1830, h: 2440 }
 /** Format dimension: integer if whole, otherwise 1 decimal */
 const fmt = (n) => Number.isInteger(n) ? n : Math.round(n * 10) / 10
 
-export default function BOMView() {
+export default function BOMView({ isMobile }) {
   const modules = useDesignStore((s) => s.modules)
   const design = useDesignStore((s) => s.design)
   const setView = useDesignStore((s) => s.setView)
@@ -50,9 +50,9 @@ export default function BOMView() {
   }, [structural.warnings])
 
   return (
-    <div style={{ display: 'flex', height: '100%', background: theme.bg.base }}>
-      {/* Left: Main list (60%) */}
-      <div style={{ flex: '0 0 60%', overflow: 'auto', padding: '24px 32px' }}>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', height: '100%', background: theme.bg.base, overflow: isMobile ? 'auto' : undefined }}>
+      {/* Left: Main list */}
+      <div style={{ flex: isMobile ? 'none' : '0 0 60%', overflow: isMobile ? 'visible' : 'auto', padding: isMobile ? '16px' : '24px 32px' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <button
@@ -215,8 +215,8 @@ export default function BOMView() {
         )}
       </div>
 
-      {/* Right: Piece preview panel (40%) */}
-      <div style={{ flex: '0 0 40%' }}>
+      {/* Right: Piece preview panel */}
+      <div style={{ flex: isMobile ? 'none' : '0 0 40%' }}>
         <PiecePreview cuts={bom.cuts} highlightedIndex={highlightedCut} />
       </div>
     </div>
