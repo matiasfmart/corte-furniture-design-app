@@ -1,0 +1,24 @@
+{
+  "name": "corte — diseño de muebles",
+  "short_name": "corte",
+  "description": "Herramienta paramétrica para diseño y corte de muebles",
+  "theme_color": "#1d2021",
+  "background_color": "#1d2021",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

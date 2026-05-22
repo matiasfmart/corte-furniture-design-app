@@ -5,6 +5,7 @@ import DesignEditor from './components/Editor2D/DesignEditor'
 import SelectionPanel from './components/Editor2D/SelectionPanel'
 import TopBar from './components/UI/TopBar'
 import StructuralStatus from './components/UI/StructuralStatus'
+import InstallPrompt from './components/UI/InstallPrompt'
 import BOMView from './components/UI/BOMView'
 import { theme } from './styles/theme'
 import { useIsMobile } from './hooks/useIsMobile'
@@ -199,6 +200,9 @@ function App() {
 
       {/* Structural status bar */}
       <StructuralStatus />
+
+      {/* PWA install prompt (mobile/tablet only) */}
+      {isMobile && <InstallPrompt />}
     </div>
   )
 }
